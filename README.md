@@ -1,7 +1,3 @@
-Here’s a complete README you can drop straight into `README.md` and tweak. I’ll assume the project name is **ChainRisk Sentinel** (you can change it globally if you like).
-
----
-
 # ChainRisk Sentinel
 
 ChainRisk Sentinel is an on-chain wallet risk & anomaly monitor.
