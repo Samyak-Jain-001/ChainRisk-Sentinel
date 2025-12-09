@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: onchain_monitor
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/onchain_monitor
+      ETHERSCAN_API_KEY: ${ETHERSCAN_API_KEY}
+      MONITORED_ADDRESSES: ${MONITORED_ADDRESSES}
+      POLL_INTERVAL_SECONDS: "60"
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  ingestor:
+    build: .
+    command: python -m app.ingestion
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/onchain_monitor
+      ETHERSCAN_API_KEY: ${ETHERSCAN_API_KEY}
+      MONITORED_ADDRESSES: ${MONITORED_ADDRESSES}
+      POLL_INTERVAL_SECONDS: "60"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
